@@ -46,24 +46,35 @@ func (usecase UserUsecase) Create(ctx context.Context, user dto.UserRegister) (i
 
 	walletId, err := usecase.walletService.CreateWallet(id)
 	if err != nil {
+		usecase.walletService.DeleteWallet(walletId)
 		usecase.userRepository.Delete(ctx, id)
 		return 0, err
 	}
 
 	_, err = usecase.walletService.CreateAccount("USD", walletId)
 	if err != nil {
-
+		usecase.walletService.DeleteAccount("USD", walletId)
+		usecase.walletService.DeleteWallet(walletId)
 		usecase.userRepository.Delete(ctx, id)
 		return 0, err
 	}
 
 	_, err = usecase.walletService.CreateAccount("EUR", walletId)
 	if err != nil {
+		usecase.walletService.DeleteAccount("EUR", walletId)
+		usecase.walletService.DeleteAccount("USD", walletId)
+		usecase.walletService.DeleteWallet(walletId)
+		usecase.userRepository.Delete(ctx, id)
 		return 0, err
 	}
 
 	_, err = usecase.walletService.CreateAccount("RUB", walletId)
 	if err != nil {
+		usecase.walletService.DeleteAccount("RUB", walletId)
+		usecase.walletService.DeleteAccount("EUR", walletId)
+		usecase.walletService.DeleteAccount("USD", walletId)
+		usecase.walletService.DeleteWallet(walletId)
+		usecase.userRepository.Delete(ctx, id)
 		return 0, err
 	}
 

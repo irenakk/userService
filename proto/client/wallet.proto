@@ -2,13 +2,17 @@ syntax = "proto3";
 
 package wallet;
 
-option go_package = "newWalletService/walletService/proto;wallet";
+option go_package = "walletService/proto/client";
 
 // gRPC сервис кошелька
 service WalletService {
   rpc CreateWallet (WalletRequest) returns (WalletResponse);
 
   rpc CreateAccount (AccountRequest) returns (AccountResponse);
+
+  rpc DeleteWallet (WalletRequest) returns (WalletResponse);
+
+  rpc DeleteAccount (AccountRequest) returns (AccountResponse);
 }
 
 message WalletRequest {

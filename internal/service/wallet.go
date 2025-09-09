@@ -30,3 +30,21 @@ func (r *WalletGrpcService) CreateAccount(currency string, walletId int) (int, e
 
 	return int(response.AccountId), nil
 }
+
+func (r *WalletGrpcService) DeleteWallet(userId int) (int, error) {
+	response, err := r.client.DeleteWallet(context.Background(), &wallet.WalletRequest{UserId: int64(userId)})
+	if err != nil {
+		return 0, err
+	}
+
+	return int(response.WalletId), nil
+}
+
+func (r *WalletGrpcService) DeleteAccount(currency string, walletId int) (int, error) {
+	response, err := r.client.DeleteAccount(context.Background(), &wallet.AccountRequest{Currency: currency, WalletId: int64(walletId)})
+	if err != nil {
+		return 0, err
+	}
+
+	return int(response.AccountId), nil
+}
