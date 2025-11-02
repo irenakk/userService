@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"github.com/golang-jwt/jwt/v5"
+	"log"
 	"time"
 	"userService/internal/dto"
 	"userService/internal/model"
@@ -17,6 +18,7 @@ type InterfaceUserUsecase interface {
 	Exists(username string) (bool, error)
 	CheckPassword(loginPassword string, userPassword string) bool
 	GenerateJWT(user model.User, tokenExpiration time.Duration, jwtSecret []byte) (string, error)
+	LinkTelegramAccount(ctx context.Context, username string, chatID int64, tgnickname string) error
 }
 
 type UserUsecase struct {
@@ -112,4 +114,14 @@ func (usecase UserUsecase) GenerateJWT(user model.User, tokenExpiration time.Dur
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(jwtSecret)
 	return tokenString, err
+}
+
+func (usecase *UserUsecase) LinkTelegramAccount(ctx context.Context, username string, chatID int64, tgnickname string) error {
+	user, err := usecase.userRepository.Find(username)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return usecase.userRepository.UpdateChatID(ctx, user.Username, chatID, tgnickname)
 }

@@ -76,6 +76,7 @@ func main() {
 	{
 		public.POST("/register", authHandler.Register)
 		public.POST("/login", authHandler.Login)
+		public.POST("/link-telegram", authHandler.LinkTelegram)
 	}
 
 	// Protected routes with JWT middleware

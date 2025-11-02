@@ -122,3 +122,24 @@ func (h *AuthHandler) Hello(c *gin.Context) {
 		"message": "Hello " + username.(string),
 	})
 }
+
+func (h *AuthHandler) LinkTelegram(c *gin.Context) {
+	var link dto.Link
+	if err := c.ShouldBindJSON(&link); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Invalid input format",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	err := h.userUsecase.LinkTelegramAccount(c, link.Username, int64(link.ChatId), link.Tgnickname)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Не удалось привязать чат ИД"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"username": link.Username,
+	})
+}
