@@ -143,3 +143,24 @@ func (h *AuthHandler) LinkTelegram(c *gin.Context) {
 		"username": link.Username,
 	})
 }
+
+func (h *AuthHandler) GetChatIDByUsername(c *gin.Context) {
+	var getId dto.Getid
+	if err := c.ShouldBindJSON(&getId); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Invalid input format",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	chatId, err := h.userUsecase.GetChatIDByUsername(c, getId.Username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Не удалось получить чат айди"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"chat_id": chatId,
+	})
+}

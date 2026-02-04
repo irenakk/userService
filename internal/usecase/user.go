@@ -19,6 +19,7 @@ type InterfaceUserUsecase interface {
 	CheckPassword(loginPassword string, userPassword string) bool
 	GenerateJWT(user model.User, tokenExpiration time.Duration, jwtSecret []byte) (string, error)
 	LinkTelegramAccount(ctx context.Context, username string, chatID int64, tgnickname string) error
+	GetChatIDByUsername(ctx context.Context, username string) (int64, error)
 }
 
 type UserUsecase struct {
@@ -124,4 +125,14 @@ func (usecase *UserUsecase) LinkTelegramAccount(ctx context.Context, username st
 	}
 
 	return usecase.userRepository.UpdateChatID(ctx, user.Username, chatID, tgnickname)
+}
+
+func (usecase *UserUsecase) GetChatIDByUsername(ctx context.Context, username string) (int64, error) {
+	user, err := usecase.userRepository.Find(username)
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+
+	return *user.TelegramChatID, nil
 }
